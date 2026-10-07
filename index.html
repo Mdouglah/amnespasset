@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ämnespasset — varför läser vi det här?</title>
+<style>
+:root{
+  --navy:#16233f;
+  --navy-deep:#0b1327;
+  --navy-soft:#223256;
+  --paper:#eef0e2;
+  --paper-2:#e2e6d4;
+  --paper-line: rgba(22,35,63,.14);
+  --gold:#b9915a;
+  --gold-light:#e3c691;
+  --ink:#1b2436;
+  --ink-soft:#4b5568;
+  --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+  --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Courier New', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--sans);
+  background:var(--navy-deep);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+button{font-family:inherit;cursor:pointer;}
+:focus-visible{outline:2px solid var(--gold-light); outline-offset:3px;}
+
+/* ---------- top chrome ---------- */
+.chrome{
+  position:sticky; top:0; z-index:40;
+  display:none;
+  align-items:center; justify-content:space-between;
+  padding:14px clamp(16px,4vw,40px);
+  background:var(--navy);
+  color:var(--paper);
+  border-bottom:1px solid rgba(233,214,177,.18);
+}
+.chrome.show{display:flex;}
+.chrome-brand{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--serif); letter-spacing:.02em; font-size:19px; font-weight:700;
+}
+.chrome-brand .mark{
+  width:22px;height:22px;border:1.5px solid var(--gold-light);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--gold-light);
+}
+.chrome-right{display:flex; align-items:center; gap:10px;}
+.pill-btn{
+  background:transparent; border:1px solid rgba(233,214,177,.45);
+  color:var(--paper); padding:8px 16px; border-radius:999px;
+  font-size:13.5px; letter-spacing:.02em; transition:all .15s ease;
+}
+.pill-btn:hover{background:rgba(233,214,177,.12); border-color:var(--gold-light);}
+.grade-tag{
+  font-family:var(--mono); font-size:12px; letter-spacing:.08em;
+  border:1px solid rgba(233,214,177,.4); border-radius:6px;
+  padding:5px 9px; color:var(--gold-light);
+}
+
+/* ---------- screens ---------- */
+.screen{display:none; min-height:100vh;}
+.screen.active{display:block;}
+#cover.active{display:flex;}
+
+/* ===== COVER ===== */
+#cover{
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -10%, rgba(233,214,177,.12), transparent 60%),
+    linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+  flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; color:var(--paper); padding:48px 20px; position:relative;
+}
+.cover-guilloche{position:absolute; inset:0; opacity:.14; pointer-events:none;}
+.float-icon{
+  position:absolute; opacity:.55; pointer-events:none;
+  animation:floaty 7s ease-in-out infinite;
+}
+.float-icon svg{width:100%; height:100%;}
+@keyframes floaty{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(-14px) rotate(6deg);}
+}
+.cover-content{position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;}
+.cover-emblem{
+  width:84px; height:84px; border-radius:50%;
+  border:1.5px solid var(--gold-light);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:26px; color:var(--gold-light);
+  position:relative;
+}
+.cover-emblem::before{
+  content:'';position:absolute; inset:-8px; border:1px dashed rgba(227,198,145,.4); border-radius:50%;
+}
+.cover-eyebrow{
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--gold-light); margin-bottom:18px;
+}
+.cover-title{
+  font-family:var(--serif); font-weight:700; font-size:clamp(38px,7vw,68px);
+  line-height:1.05; margin:0 0 18px; letter-spacing:-.01em;
+}
+.cover-title em{font-style:italic; color:var(--gold-light);}
+.cover-sub{
+  font-size:clamp(15px,2vw,18px); color:rgba(238,240,226,.78); max-width:560px;
+  line-height:1.6; margin:0 0 46px;
+}
+.cover-hint{
+  font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(227,198,145,.75); margin-bottom:18px;
+}
+.editions{
+  display:flex; gap:22px; flex-wrap:wrap; justify-content:center; max-width:900px;
+}
+.edition{
+  width:190px; padding:28px 20px 24px;
+  background:linear-gradient(160deg, var(--navy-soft), var(--navy));
+  border:1px solid rgba(233,214,177,.3); border-radius:10px;
+  color:var(--paper); text-align:left; position:relative; overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1), border-color .25s ease, box-shadow .25s ease;
+}
+.edition::after{
+  content:''; position:absolute; right:14px; top:14px; width:30px; height:30px;
+  border:1px dashed rgba(233,214,177,.4); border-radius:50%;
+}
+.edition:hover, .edition:focus-visible{
+  transform:translateY(-6px) scale(1.02); border-color:var(--gold-light);
+  box-shadow:0 18px 34px rgba(0,0,0,.35);
+}
+.edition .num{
+  font-family:var(--serif); font-size:44px; font-weight:700; color:var(--gold-light); line-height:1;
+}
+.edition .lbl{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(238,240,226,.65); margin-top:10px;
+}
+.edition .go{
+  margin-top:20px; font-size:13px; color:var(--gold-light); display:flex; align-items:center; gap:6px;
+}
+.cover-foot{
+  margin-top:44px; font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+  color:rgba(238,240,226,.45); position:relative; z-index:2;
+}
+
+/* ===== GRID (subject select) ===== */
+#gridScreen{background:var(--paper); min-height:100vh;}
+.grid-hero{
+  padding:44px clamp(16px,4vw,40px) 20px;
+  background:
+    radial-gradient(ellipse 700px 320px at 12% 0%, rgba(185,145,90,.10), transparent 60%),
+    var(--paper);
+  border-bottom:1px solid var(--paper-line);
+}
+.grid-eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--navy);}
+.grid-title{font-family:var(--serif); font-size:clamp(28px,4.2vw,42px); margin:8px 0 6px; color:var(--navy);}
+.grid-sub{color:var(--ink-soft); max-width:620px; font-size:15px; line-height:1.55;}
+.subject-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr));
+  gap:16px; padding:28px clamp(16px,4vw,40px) 60px;
+}
+.subject-card{
+  background:#fff; border:1px solid var(--paper-line); border-top:4px solid var(--sc);
+  border-radius:12px; padding:22px 16px 18px; text-align:center; position:relative;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.subject-card:hover, .subject-card:focus-visible{
+  transform:translateY(-5px); box-shadow:0 16px 28px rgba(22,35,63,.14);
+}
+.badge{
+  width:60px; height:60px; margin:0 auto 12px; border-radius:50%;
+  border:1.6px solid var(--sc); background:var(--sc-tint);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--sc); position:relative; transition:transform .18s ease;
+}
+.subject-card:hover .badge{transform:scale(1.08) rotate(-4deg);}
+.badge svg{width:30px; height:30px;}
+.subject-card .sname{font-weight:700; font-size:14.5px; color:var(--ink); line-height:1.25;}
+.subject-card .svibe{
+  font-size:11.5px; color:var(--sc); margin-top:6px; font-weight:600;
+}
+.subject-card .scode{
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; color:var(--ink-soft);
+  margin-top:8px; text-transform:uppercase; opacity:.6;
+}
+
+/* ===== DETAIL (visa page) ===== */
+#detailScreen{background:var(--paper); min-height:100vh;}
+.detail-wrap{
+  max-width:900px; margin:0 auto; padding:36px clamp(16px,4vw,40px) 40px;
+}
+.detail-back{
+  display:inline-flex; align-items:center; gap:6px; font-size:13.5px; color:var(--ink-soft);
+  background:none; border:none; padding:0; margin-bottom:26px; font-weight:600;
+}
+.detail-back:hover{color:var(--navy); text-decoration:underline;}
+.visa-page{
+  background:#fff; border:1px solid var(--paper-line); border-radius:16px;
+  padding:clamp(24px,5vw,52px); position:relative; overflow:hidden;
+  border-top:6px solid var(--sc);
+}
+.visa-wash{
+  position:absolute; top:-120px; right:-120px; width:420px; height:420px; border-radius:50%;
+  background:var(--sc-tint); opacity:.7; pointer-events:none;
+}
+.visa-guilloche{position:absolute; inset:0; opacity:.06; pointer-events:none;}
+.visa-head{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:24px;
+  flex-wrap:wrap; margin-bottom:8px; position:relative; z-index:1;
+}
+.visa-titles .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--sc);}
+.visa-titles h1{font-family:var(--serif); font-size:clamp(30px,5vw,46px); margin:6px 0 4px; color:var(--navy); line-height:1.05;}
+.visa-titles .vibe-tag{
+  display:inline-block; font-size:12.5px; font-weight:700; color:var(--sc);
+  background:var(--sc-tint); border-radius:999px; padding:4px 12px; margin-top:4px;
+}
+.stamp{
+  width:132px; height:132px; flex:0 0 auto; transform:rotate(-8deg);
+  animation:stampIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes stampIn{
+  0%{transform:rotate(-8deg) scale(1.9); opacity:0;}
+  60%{transform:rotate(-8deg) scale(0.94); opacity:1;}
+  100%{transform:rotate(-8deg) scale(1);}
+}
+.field{
+  margin-top:30px; padding-top:22px; border-top:1px dashed var(--paper-line);
+  position:relative; z-index:1;
+}
+.field:first-of-type{margin-top:34px;}
+.field-label{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--sc); margin-bottom:10px; display:flex; align-items:center; gap:8px;
+}
+.field-label .n{
+  width:20px;height:20px;border-radius:50%;border:1px solid var(--sc);
+  display:inline-flex; align-items:center; justify-content:center; font-size:10.5px;
+}
+.field-body{font-size:16px; line-height:1.65; color:var(--ink);}
+.field-list{margin:0; padding:0; list-style:none;}
+.field-list li{
+  padding:9px 0 9px 22px; border-bottom:1px solid var(--paper-line);
+  position:relative; font-size:15.5px; line-height:1.55;
+}
+.field-list li:last-child{border-bottom:none;}
+.field-list li::before{
+  content:'—'; position:absolute; left:0; color:var(--sc); font-weight:700;
+}
+.field-list b{color:var(--navy);}
+.visa-footer{
+  margin-top:36px; padding-top:18px; border-top:1px solid var(--paper-line);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  position:relative; z-index:1;
+}
+.code{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; color:var(--ink-soft);}
+.detail-nav{display:flex; gap:10px;}
+.nav-btn{
+  border:1px solid var(--navy); background:#fff; color:var(--navy);
+  padding:9px 15px; border-radius:8px; font-size:13.5px; font-weight:600;
+  display:flex; align-items:center; gap:6px; transition:all .15s ease;
+}
+.nav-btn:hover{background:var(--navy); color:#fff;}
+.nav-btn:disabled{opacity:.3; cursor:default;}
+.nav-btn:disabled:hover{background:#fff; color:var(--navy);}
+
+/* progress dots */
+.progress-strip{
+  max-width:900px; margin:0 auto; padding:0 clamp(16px,4vw,40px) 60px;
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+.pdot{
+  width:15px; height:15px; border-radius:50%; border:2px solid var(--dc);
+  background:transparent; padding:0; transition:transform .15s ease;
+  position:relative;
+}
+.pdot:hover{transform:scale(1.25);}
+.pdot.current{background:var(--dc);}
+.pdot.current::after{
+  content:''; position:absolute; inset:-4px; border:1px solid var(--dc); border-radius:50%; opacity:.5;
+}
+
+/* fade/slide transition */
+.screen{animation:fadeIn .35s ease both;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+@media (prefers-reduced-motion: reduce){
+  .screen{animation:none;}
+  .subject-card, .edition, .badge{transition:none;}
+  .stamp{animation:none;}
+  .float-icon{animation:none;}
+}
+
+@media (max-width:560px){
+  .subject-grid{grid-template-columns:repeat(2,1fr);}
+  .visa-head{flex-direction:column-reverse;}
+  .stamp{align-self:flex-start;}
+  .float-icon{display:none;}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+<defs id="iconDefs"></defs>
+</svg>
+
+<div class="chrome" id="chrome">
+  <div class="chrome-brand"><span class="mark">Ä</span> Ämnespasset</div>
+  <div class="chrome-right">
+    <span class="grade-tag" id="chromeGrade"></span>
+    <button class="pill-btn" id="btnChangeGrade">Byt årskurs</button>
+  </div>
+</div>
+
+<!-- ================= COVER ================= -->
+<section class="screen active" id="cover">
+  <svg class="cover-guilloche" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#e3c691" stroke-width="0.6">
+      <circle cx="400" cy="300" r="120"/><circle cx="400" cy="300" r="160"/><circle cx="400" cy="300" r="200"/>
+      <circle cx="80" cy="80" r="70"/><circle cx="80" cy="80" r="100"/>
+      <circle cx="740" cy="520" r="80"/><circle cx="740" cy="520" r="115"/>
+    </g>
+  </svg>
+  <div id="floatIcons"></div>
+  <div class="cover-content">
+    <div class="cover-emblem">
+      <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 3 L20 7 V13 C20 18 16.5 20.5 12 21.5 C7.5 20.5 4 18 4 13 V7 Z"/>
+        <path d="M9 12 L11 14 L15.5 9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="cover-eyebrow">Korsängskolan · Startveckan</div>
+    <h1 class="cover-title">Ämnes<em>passet</em></h1>
+    <p class="cover-sub">En resa genom högstadiets alla ämnen. Öppna ett uppslag, visa klassen varför just det här ämnet finns — och vart det kan ta dem.</p>
+    <div class="cover-hint">Välj årskurs för att öppna passet</div>
+    <div class="editions">
+      <button class="edition" data-grade="7">
+        <div class="num">07</div>
+        <div class="lbl">Årskurs sju</div>
+        <div class="go">Öppna uppslaget →</div>
+      </button>
+      <button class="edition" data-grade="8">
+        <div class="num">08</div>
+        <div class="lbl">Årskurs åtta</div>
+        <div class="go">Öppna uppslaget →</div>
+      </button>
+      <button class="edition" data-grade="9">
+        <div class="num">09</div>
+        <div class="lbl">Årskurs nio</div>
+        <div class="go">Öppna uppslaget →</div>
+      </button>
+    </div>
+    <div class="cover-foot">17 ämnen · 3 årskurser · ett uppslag i taget</div>
+  </div>
+</section>
+
+<!-- ================= GRID ================= -->
+<section class="screen" id="gridScreen">
+  <div class="grid-hero">
+    <div class="grid-eyebrow" id="gridEyebrow">Årskurs 7</div>
+    <h2 class="grid-title">Välj ämne</h2>
+    <p class="grid-sub">Klicka på ett ämne för att öppna sidan och visa klassen varför de läser det — och vad de kan använda det till.</p>
+  </div>
+  <div class="subject-grid" id="subjectGrid"></div>
+</section>
+
+<!-- ================= DETAIL ================= -->
+<section class="screen" id="detailScreen">
+  <div class="detail-wrap">
+    <button class="detail-back" id="btnBackToGrid">← Alla ämnen, årskurs <span id="backGrade"></span></button>
+    <div class="visa-page" id="visaPage">
+      <div class="visa-wash"></div>
+      <svg class="visa-guilloche" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+        <g fill="none" stroke="#16233f" stroke-width="0.6">
+          <circle cx="700" cy="60" r="90"/><circle cx="700" cy="60" r="130"/>
+          <circle cx="60" cy="440" r="90"/><circle cx="60" cy="440" r="130"/>
+        </g>
+      </svg>
+      <div class="visa-head">
+        <div class="visa-titles">
+          <div class="kicker" id="detKicker">Årskurs 7 · Ämnesuppslag</div>
+          <h1 id="detTitle">Matematik</h1>
+          <span class="vibe-tag" id="detVibe">Mönster & problem</span>
+        </div>
+        <svg class="stamp" id="detStamp" viewBox="0 0 140 140"></svg>
+      </div>
+
+      <div class="field">
+        <div class="field-label"><span class="n">1</span> Vad handlar det om?</div>
+        <div class="field-body" id="detOm"></div>
+      </div>
+      <div class="field">
+        <div class="field-label"><span class="n">2</span> Vad lär du dig?</div>
+        <ul class="field-list" id="detLar"></ul>
+      </div>
+      <div class="field">
+        <div class="field-label"><span class="n">3</span> Varför är det kul?</div>
+        <div class="field-body" id="detKul"></div>
+      </div>
+      <div class="field">
+        <div class="field-label"><span class="n">4</span> Hur kan du använda det i framtiden?</div>
+        <ul class="field-list" id="detFramtid"></ul>
+      </div>
+
+      <div class="visa-footer">
+        <span class="code" id="detCode">SE·HS·MAT·07</span>
+        <div class="detail-nav">
+          <button class="nav-btn" id="btnPrevSubj">← Föregående</button>
+          <button class="nav-btn" id="btnNextSubj">Nästa →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-strip" id="progressStrip"></div>
+</section>
+
+<script>
+const DATA = {"7": {"matematik": {"name": "Matematik", "om": "Matematik handlar om att utveckla problemlösningsförmåga och logiskt tänkande samt förstå hur siffror, formler och samband fungerar.", "lar": ["Tal och räkning: Förståelse för de fyra räkneoperationerna och deras tillämpningar.", "Procent och statistik: Hur man beräknar procent och analyserar data.", "Geometri: Utforska former, mått och vinklar.", "Problemlösning: Träna på att hitta strategiska lösningar för olika typer av problem."], "kul": "Matematik ger dig verktyg att lösa vardagliga problem och skapa struktur i tanken. Det är tillfredsställande att komma fram till rätt svar.", "framtid": ["Karriär: Viktigt inom yrken som ekonomi, teknik, naturvetenskap och IT.", "Dagligt liv: Hantera pengar, planera budget och lösa praktiska problem.", "Vidare studier: En bra grund för avancerade studier inom natur- och samhällsämnen."]}, "svenska": {"name": "Svenska", "om": "Svenska handlar om att utveckla språklig förmåga, läsa och skriva samt förstå litteratur och kommunikation.", "lar": ["Läsning: Förståelse av skön- och facklitteratur.", "Skrivande: Skapa texter, från argumenterande till berättande.", "Tal: Utveckla retorik och muntlig framställning.", "Källkritik: Lär dig att analysera och värdera information."], "kul": "Det är roligt att utforska nya världar genom litteratur och spännande att utveckla sitt eget sätt att uttrycka sig.", "framtid": ["Karriär: Förberedelse för jobb som journalist, lärare, författare eller kommunikatör.", "Dagligt liv: Skriva mejl, argumentera och förstå texter.", "Personlig utveckling: Bygga självförtroende genom att uttrycka dig klart och tydligt."]}, "biologi": {"name": "Biologi", "om": "Biologi handlar om att utforska livet på jorden, hur människor, djur och växter fungerar och samverkar.", "lar": ["Celler och kroppens funktioner: Hur livet fungerar på mikronivå och i helhet.", "Ekosystem: Hur organismer samspelar med miljön.", "Hälsa: Sambandet mellan livsstil och välbefinnande.", "Miljö: Förståelse för hur vi kan skydda naturen."], "kul": "Du får upptäcka hur din egen kropp fungerar och hur allt liv hänger ihop i ett komplext samspel.", "framtid": ["Karriär: Yrken inom medicin, miljövård och bioteknik.", "Hälsa: Kunskap om kroppen hjälper dig att ta hand om dig själv.", "Miljö: Hjälpa till att skapa en hållbar framtid."]}, "historia": {"name": "Historia", "om": "Historia handlar om att förstå vad som har hänt i världen och hur det påverkar oss idag.", "lar": ["Forntiden och antiken: Hur de första civilisationerna växte fram.", "Medeltiden och renässansen: Hur samhällen utvecklades.", "Historiska källor: Hur man tolkar och analyserar dem.", "Samhällsförändring: Hur revolutioner och konflikter format världen."], "kul": "Det är spännande att resa tillbaka i tiden och lära sig om människors liv och stora händelser.", "framtid": ["Karriär: Historiker, journalist, arkeolog eller lärare.", "Samhällsmedborgare: Förståelse för hur vårt samhälle vuxit fram.", "Kultur: Bredare perspektiv på konst, litteratur och traditioner."]}, "engelska": {"name": "Engelska", "om": "Engelska är ett globalt språk som används i kommunikation, vetenskap och kultur.", "lar": ["Grammatik: Byggblocken för att tala och skriva korrekt.", "Ordförråd: Utöka ditt ordförråd för att uttrycka dig.", "Kommunikation: Prata, lyssna och förstå engelska i olika sammanhang.", "Kulturell inblick: Utforska engelskspråkiga länders traditioner."], "kul": "Det är givande att kunna se på filmer och lyssna på musik på originalspråket och kunna prata med människor från andra länder.", "framtid": ["Karriär: Engelska är nyckeln till många yrken.", "Resor: Res bekvämt och kommunicera internationellt.", "Studier: Nödvändigt för vidareutbildning."]}, "geografi": {"name": "Geografi", "om": "Geografi handlar om hur jordens naturliga och mänskliga processer formar vår värld.", "lar": ["Klimat: Förståelse för väder, klimat och naturkatastrofer.", "Karta och plats: Hur man använder kartor och analyserar lägen.", "Befolkning: Migration och urbaniseringens påverkan.", "Hållbarhet: Ansvarsfull resurshantering."], "kul": "Det är fascinerande att utforska nya platser och hur människor lever runt om i världen.", "framtid": ["Karriär: Meteorolog, stadsplanerare eller miljöanalytiker.", "Resor: Planera och förstå resmål.", "Miljömedvetenhet: Skapa en hållbar livsstil."]}, "musik": {"name": "Musik", "om": "Musik handlar om att skapa, spela och förstå ljudens konst.", "lar": ["Spelteknik: Lär dig spela instrument eller sjunga.", "Musikteori: Notläsning och förståelse av rytm och harmoni.", "Kreativitet: Skapa egen musik eller improvisera.", "Kultur: Förstå olika musiktraditioner."], "kul": "Musik är ett sätt att uttrycka känslor och tankar samt samarbeta med andra.", "framtid": ["Karriär: Musiker, ljudtekniker eller lärare.", "Fritid: Spela som hobby eller i band.", "Personlig utveckling: Musik stimulerar kreativitet och samarbetsförmåga."]}, "slojd": {"name": "Slöjd", "om": "Slöjd handlar om att skapa och reparera med olika material.", "lar": ["Hantverk: Bygga och laga saker med händerna.", "Design: Skapa praktiska och estetiska lösningar.", "Hållbarhet: Reparera i stället för att slänga.", "Självständighet: Främja egna idéer."], "kul": "Du får se konkreta resultat av ditt arbete och använda din kreativitet.", "framtid": ["Karriär: Designer, hantverkare eller ingenjör.", "Fritid: Skapa egna projekt hemma.", "Miljö: Bidra till hållbar konsumtion."]}, "kemi": {"name": "Kemi", "om": "Kemi handlar om ämnen och hur de förändras – från vatten och luft till plast och läkemedel.", "lar": ["Vad saker är uppbyggda av – atomer och molekyler.", "Hur kemiska reaktioner fungerar.", "Om ämnens egenskaper och hur vi använder dem.", "Miljöfrågor kopplade till kemikalier."], "kul": "Du får experimentera, upptäcka osynliga processer och förstå vardagen på en ny nivå.", "framtid": ["Inom forskning, sjukvård, miljöarbete och teknik.", "För att förstå innehåll i produkter och kemikalier.", "Göra medvetna val om miljö och hälsa."]}, "fysik": {"name": "Fysik", "om": "Fysik handlar om hur världen fungerar – från ljus och ljud till rörelse och energi.", "lar": ["Om krafter, tryck, ljud och ljus.", "Hur elektricitet och energi fungerar.", "Universums uppbyggnad och naturlagar.", "Experiment och mätningar."], "kul": "Du får utforska naturens lagar, förstå teknik och göra spännande experiment.", "framtid": ["Inom teknik, ingenjörsyrken, IT och forskning.", "För att förstå hur maskiner och teknik fungerar.", "Tänka logiskt och lösa problem."]}, "samhallskunskap": {"name": "Samhällskunskap", "om": "Samhällskunskap handlar om hur samhället fungerar – från politik och lagar till ekonomi och medier.", "lar": ["Om demokrati, rättigheter och skyldigheter.", "Hur ekonomi, politik och lagar påverkar dig.", "Kritiskt granska nyheter och information.", "Hur du kan påverka samhället."], "kul": "Du lär dig om din egen roll i samhället och hur du kan göra skillnad.", "framtid": ["För att förstå samhället och ta kloka beslut.", "Delta i samhällsdebatter och påverka framtiden.", "Jobba med juridik, politik, media eller undervisning."]}, "religionskunskap": {"name": "Religionskunskap", "om": "Religionskunskap handlar om människors tro, livsfrågor och hur religion påverkar världen.", "lar": ["Om olika religioner och livsåskådningar.", "Vad människor tror på och varför.", "Etiska frågor och livets stora frågor.", "Hur religion påverkar kultur, konflikter och fred."], "kul": "Du får tänka kring stora frågor och förstå andra människors sätt att leva.", "framtid": ["För att förstå människor från olika kulturer.", "Reflektera över egna värderingar och val.", "Jobba med människor, kultur, vård eller samhälle."]}, "teknik": {"name": "Teknik", "om": "Teknik handlar om att förstå hur saker fungerar och hur vi kan lösa problem med smarta lösningar.", "lar": ["Hur vardagsteknik fungerar – t.ex. cyklar, lampor och broar.", "Skapa egna konstruktioner och lösningar.", "Digital teknik och programmering.", "Hur teknik påverkar samhället."], "kul": "Du får skapa, bygga och förstå hur saker du använder varje dag fungerar.", "framtid": ["Inom teknik, ingenjörsyrken, IT och innovation.", "För att lösa problem i vardagen.", "Utveckla nya uppfinningar och lösningar."]}, "idrott": {"name": "Idrott och hälsa", "om": "Idrott handlar om rörelse, hälsa och att må bra – både fysiskt och mentalt.", "lar": ["Röra dig på olika sätt – idrott, dans, lekar och friluftsliv.", "Hur kroppen fungerar och hur du tar hand om den.", "Samarbete och fair play.", "Planera din träning och återhämtning."], "kul": "Du får röra på dig, ha kul tillsammans och må bättre.", "framtid": ["Hålla dig frisk och stark.", "Jobba med idrott, hälsa eller ledarskap.", "Få bättre koncentration och mående i vardagen."]}, "bild": {"name": "Bild", "om": "Bild handlar om att uttrycka sig visuellt – med färg, form, bilder och budskap.", "lar": ["Skapa bilder med olika tekniker och material.", "Tolka och analysera bilder.", "Uttrycka känslor och idéer visuellt.", "Förstå bildspråk i reklam, konst och media."], "kul": "Du får vara kreativ, skapa något eget och tolka världen på ditt sätt.", "framtid": ["Inom design, media, konst och reklam.", "Uttrycka dig med bilder i vardagen och online.", "Förstå visuella budskap bättre."]}, "hemkunskap": {"name": "Hem- och konsumentkunskap", "om": "Det handlar om vardagsliv – mat, ekonomi, miljö och att ta hand om sig själv.", "lar": ["Laga mat och planera måltider.", "Sköta ekonomi och göra hållbara val.", "Konsumenträtt och reklam.", "Samarbete och ansvar i hemmet."], "kul": "Du får testa praktiska saker du har nytta av direkt i livet.", "framtid": ["Klara vardagen bättre – laga mat, planera ekonomi.", "Ta smarta beslut som konsument.", "Jobba med mat, hälsa eller konsumentfrågor."]}, "modernasprak": {"name": "Moderna språk", "om": "Moderna språk handlar om att lära sig ett nytt språk – till exempel spanska, franska eller tyska.", "lar": ["Tala, skriva, läsa och förstå ett nytt språk.", "Lära om kulturer i andra länder.", "Träna grammatik, uttal och ordförråd.", "Kommunicera i nya sammanhang."], "kul": "Du får upptäcka nya språk och kulturer, och känna att du förstår mer av världen.", "framtid": ["Resa, jobba eller studera utomlands.", "Få fler jobbchanser och kontakter.", "Förstå och kommunicera med fler människor."]}}, "8": {"matematik": {"name": "Matematik", "om": "Matematik handlar om att lösa problem, analysera samband och förstå hur siffror och formler används i vårt dagliga liv.", "lar": ["Algebra: Hur man arbetar med variabler och ekvationer för att hitta lösningar.", "Geometri: Förstå former, vinklar och mått i praktiska sammanhang.", "Statistik: Hur man samlar in och analyserar data.", "Problemlösning: Utveckla logiskt tänkande och strategier för att hitta lösningar."], "kul": "Matematik är som ett pussel där du får glädjen av att hitta rätt svar. Du kan också se hur teorin tillämpas i verkligheten, som i teknik och naturvetenskap.", "framtid": ["Karriär: Jobb inom ekonomi, teknik, naturvetenskap, programmering och byggnadskonstruktion.", "Dagligt liv: Budgetering, planering och problemlösning.", "Vidare studier: En stark matematisk grund är avgörande för många högre utbildningar."]}, "biologi": {"name": "Biologi", "om": "Biologi handlar om att förstå hur livet på jorden fungerar, från celler till ekosystem.", "lar": ["Ekologi: Hur organismer samspelar med varandra och sin miljö.", "Människokroppen: Förstå hur kroppens system fungerar och hålls friska.", "Genetik: Hur egenskaper ärvs och hur DNA fungerar.", "Evolution: Hur arter utvecklas och anpassar sig över tid."], "kul": "Du får upptäcka spännande fakta om livet, djur, växter och hur allt är sammanlänkat. Praktiska laborationer gör det ännu mer intressant.", "framtid": ["Karriär: Jobb inom medicin, miljövård, bioteknik och forskning.", "Hälsa: Förstå din kropp och hur du tar hand om den.", "Miljö: Hjälp till att skydda naturen och arbeta för hållbarhet."]}, "historia": {"name": "Historia", "om": "Historia handlar om att lära sig om vårt förflutna för att förstå vår samtid och hur vi kan forma framtiden.", "lar": ["Världshistoria: Viktiga händelser som format mänskligheten.", "Sveriges historia: Hur vårt land utvecklats genom tiderna.", "Källkritik: Hur man analyserar information och skiljer fakta från åsikter.", "Kultur och samhälle: Förståelse för olika tidsepokers livsstilar och värderingar."], "kul": "Du får resa tillbaka i tiden och upptäcka spännande historier och händelser som har format dagens samhälle.", "framtid": ["Karriär: Historiker, journalist, lärare eller arkeolog.", "Samhällsmedborgare: Förstå hur dagens samhälle kom till och hur du kan påverka framtiden.", "Kultur: Få en bredare förståelse för konst, litteratur och traditioner."]}, "engelska": {"name": "Engelska", "om": "Engelska är språket som används över hela världen i kommunikation, media och vetenskap.", "lar": ["Grammatik och ordförråd: Bygg en stabil grund för att tala och skriva.", "Kommunikation: Träna på att uttrycka dig muntligt och skriftligt i olika situationer.", "Kulturell förståelse: Utforska engelsktalande länders kultur och traditioner.", "Läsning och analys: Förbättra din förståelse genom att läsa böcker och artiklar."], "kul": "Du kan se filmer, lyssna på musik och läsa böcker på engelska. Det är också kul att upptäcka nya kulturer och kommunicera med människor från hela världen.", "framtid": ["Karriär: Engelska är viktigt inom alla yrkesområden, från handel till vetenskap.", "Resor: Res tryggare och mer självständigt.", "Vidare studier: Engelska är ofta nödvändigt för högre utbildningar."]}, "hemkunskap": {"name": "Hem- och konsumentkunskap", "om": "Hem- och konsumentkunskap handlar om att lära sig praktiska och ekonomiska färdigheter för vardagen.", "lar": ["Matlagning: Hur du lagar hälsosam och god mat.", "Ekonomi: Hur du planerar en budget och gör smarta konsumentval.", "Hållbarhet: Hur du kan minska matsvinn och leva mer miljövänligt.", "Vardagskunskap: Praktiska tips för att sköta ett hushåll."], "kul": "Du får testa nya recept och lära dig praktiska saker som du direkt kan använda i ditt liv.", "framtid": ["Självständighet: Hantera din egen ekonomi och hushåll.", "Karriär: Jobb inom matlagning, näring eller miljövård.", "Hållbarhet: Bidra till en mer hållbar framtid genom medvetna val."]}, "slojd": {"name": "Slöjd", "om": "Slöjd handlar om att skapa och reparera med händerna samtidigt som du lär dig olika material och tekniker.", "lar": ["Hantverk: Hur du syr, snidar, bygger och konstruerar.", "Design och kreativitet: Skapa unika föremål och utveckla problemlösning.", "Hållbarhet: Reparera och återanvända istället för att slänga.", "Projektledning: Planera och genomföra egna projekt."], "kul": "Det är tillfredsställande att skapa något med egna händer och se resultatet av ditt arbete.", "framtid": ["Karriär: Jobb inom design, mode, hållbarhet och hantverk.", "Hållbarhet: Bidra till att minska konsumtionen genom reparation och återbruk.", "Hobby: Utveckla slöjd som en kreativ fritidsaktivitet."]}, "geografi": {"name": "Geografi", "om": "Geografi handlar om att förstå vår värld – hur naturen, miljön och människors samhällen hänger ihop och påverkar varandra.", "lar": ["Kartkunskap: Att läsa, skapa och tolka kartor för att förstå världens länder, klimat och resurser.", "Miljö och hållbarhet: Hur vi kan ta hand om jorden genom hållbar utveckling och smart resursanvändning.", "Klimat och naturfenomen: Förstå varför det regnar, varför vulkaner utbrott och hur stormar bildas.", "Globalisering: Lär dig hur olika delar av världen är ekonomiskt och kulturellt sammanflätade.", "Demografi: Analysera befolkningsutveckling och migration och hur det påverkar länder och regioner."], "kul": "Du får en global förståelse och lär dig om fascinerande platser och fenomen. Det är spännande att koppla kunskaper till aktuella nyheter, som klimatförändringar eller konflikter om resurser.", "framtid": ["Karriär: Jobb som meteorolog, stadsplanerare, miljökonsult eller inom internationella organisationer.", "Resor: Planera resor bättre och förstå kulturella och geografiska skillnader.", "Dagligt liv: Veta hur din konsumtion och livsstil påverkar miljön och samhället globalt."]}, "svenska": {"name": "Svenska", "om": "Svenska handlar om att utveckla din förmåga att uttrycka dig i tal och skrift, förstå olika typer av texter och reflektera över språkets makt och roll i samhället.", "lar": ["Läsa och analysera olika texter, från romaner till nyhetsartiklar.", "Skriva egna texter – berättande, argumenterande och beskrivande.", "Utveckla ditt ordförråd och din grammatik.", "Tala inför andra och lyssna aktivt på vad andra säger."], "kul": "Du får använda fantasin, uttrycka dina tankar och känslor, och diskutera viktiga frågor.", "framtid": ["I nästan alla yrken krävs goda språkkunskaper.", "Att kunna skriva och tala väl är viktigt i både studier och vardag.", "Svenska hjälper dig bli bättre på att argumentera, samarbeta och förstå andra människor."]}, "fysik": {"name": "Fysik", "om": "Fysik handlar om att förstå naturens lagar – hur allt från atomer till galaxer fungerar.", "lar": ["Rörelse, energi, tryck och elektricitet.", "Hur universum fungerar – från ljus till ljud.", "Att planera och genomföra experiment."], "kul": "Du får experimentera, tänka kreativt och förstå världen på ett djupare sätt.", "framtid": ["Grunden för tekniska och naturvetenskapliga yrken.", "Förstå teknik, energi och klimatfrågor.", "Utvecklar din problemlösningsförmåga."]}, "kemi": {"name": "Kemi", "om": "Kemi handlar om ämnen – vad de består av, hur de reagerar och påverkar vår omvärld.", "lar": ["Atomer, molekyler och kemiska reaktioner.", "Hur olika ämnen kan kombineras eller separeras.", "Hur kemin påverkar miljö, hälsa och industri."], "kul": "Du får blanda, undersöka och se vad som händer i spännande laborationer.", "framtid": ["Viktigt inom medicin, miljövård, livsmedel och industri.", "Hjälper dig förstå vardagsprodukter och kemikalier.", "Kritiskt tänkande och experimentella färdigheter är användbara i många sammanhang."]}, "religionskunskap": {"name": "Religionskunskap", "om": "Religionskunskap handlar om att förstå olika livsåskådningar, religioners roll i världen och vad människor tror på.", "lar": ["Olika religioners historia, traditioner och ritualer.", "Livsfrågor, etik och moral.", "Hur religion påverkar individer och samhällen."], "kul": "Du får reflektera över djupa frågor och förstå olika sätt att tänka.", "framtid": ["Viktigt för arbete med människor – som lärare, polis eller vårdpersonal.", "Hjälper dig förstå samhällets mångfald och skapa respekt för olikheter.", "Utvecklar empati och etiskt tänkande."]}, "samhallskunskap": {"name": "Samhällskunskap", "om": "Samhällskunskap handlar om hur samhället fungerar – politik, ekonomi, rättigheter och medier.", "lar": ["Hur beslut fattas i Sverige och världen.", "Dina rättigheter och skyldigheter som medborgare.", "Ekonomi, arbetsliv och digitala medier."], "kul": "Du får diskutera aktuella händelser och lära dig hur du kan påverka samhället.", "framtid": ["Ger dig verktyg att bli en aktiv och ansvarstagande medborgare.", "Grund för vidare studier inom juridik, ekonomi och samhällsvetenskap.", "Förståelse för politik, media och demokratiska processer."]}, "modernasprak": {"name": "Moderna språk", "om": "Moderna språk (t.ex. spanska, franska, tyska) handlar om att kommunicera med människor i andra länder och förstå andra kulturer.", "lar": ["Tala, skriva, läsa och lyssna på ett nytt språk.", "Lära dig om kultur, traditioner och vardagsliv i andra länder.", "Uttrycka dig i vardagliga situationer."], "kul": "Du får upptäcka nya språk, resmål och kulturer – och känna dig stolt när du förstår och gör dig förstådd.", "framtid": ["Öppnar dörrar till jobb och studier utomlands.", "Värdefullt inom turism, tolkning, diplomati och handel.", "Ger dig en fördel i många yrken där språkkunskaper uppskattas."]}, "bild": {"name": "Bild", "om": "Bild handlar om att uttrycka idéer, känslor och budskap visuellt – genom färg, form och bildspråk.", "lar": ["Använda olika tekniker och material.", "Tolka och skapa bilder med budskap.", "Utveckla din kreativitet och visuella förståelse."], "kul": "Du får skapa fritt, experimentera och visa vem du är – utan att alltid behöva använda ord.", "framtid": ["Grunden för yrken inom design, media och konst.", "Hjälper dig kommunicera visuellt – t.ex. i presentationer eller reklam.", "Utvecklar kreativt tänkande och självuttryck."]}, "musik": {"name": "Musik", "om": "Musik handlar om att skapa, uppleva och förstå musikens roll i kulturen och människors liv.", "lar": ["Spela instrument, sjunga och skapa musik.", "Lyssna och analysera olika musikstilar.", "Samarbeta och framträda inför andra."], "kul": "Musik engagerar, väcker känslor och skapar gemenskap.", "framtid": ["Viktigt inom musikbranschen, men också i undervisning, media och terapi.", "Musik stärker minne, kreativitet och samarbetsförmåga.", "Ger dig ett livslångt intresse och uttrycksmedel."]}, "idrott": {"name": "Idrott och hälsa", "om": "Idrott och hälsa handlar om att må bra – fysiskt, psykiskt och socialt.", "lar": ["Röra dig på olika sätt – idrott, lekar, dans.", "Hälsa, kost, sömn och livsstil.", "Samarbete, respekt och fair play."], "kul": "Du får vara aktiv, testa nya saker och ha roligt tillsammans med andra.", "framtid": ["Grunden för ett hälsosamt liv.", "Förberedelse för att klara fysisk belastning i olika yrken.", "Stärker självförtroende och stresshantering."]}, "teknik": {"name": "Teknik", "om": "Teknik handlar om hur vi människor använder kunskap, redskap och idéer för att lösa problem och skapa nya lösningar i vår vardag – från enkla verktyg till avancerad digital teknik.", "lar": ["Tekniska system: Hur saker som vattenförsörjning, elnät, transport och internet fungerar.", "Digital kompetens: Programmering, digitala verktyg och hur tekniken påverkar samhället.", "Problemlösning: Du får arbeta kreativt för att hitta lösningar på tekniska utmaningar.", "Design och konstruktion: Hur man planerar, bygger och testar tekniska idéer.", "Teknikhistoria: Hur tekniken har utvecklats och förändrat människors liv."], "kul": "Du får bygga, konstruera och testa dina idéer i praktiken. Det är ett ämne där kreativitet och logiskt tänkande går hand i hand. Du ser tydligt hur dina kunskaper kan användas för att förändra saker i verkligheten.", "framtid": ["Yrken: Teknik öppnar dörrar till jobb inom IT, ingenjörsvetenskap, design, bygg, energi och mycket mer.", "Framtidsförberedelse: Du förstår tekniken bakom det du använder varje dag – från appar till elbilar.", "Innovation: Du lär dig tänka lösningsinriktat och bidra till tekniska förbättringar i samhället."]}}, "9": {"geografi": {"name": "Geografi", "om": "Geografi handlar om att förstå jordens fysiska och mänskliga system – från klimat och naturresurser till hur människor lever och påverkar planeten.", "lar": ["Klimat och miljö: Hur klimatförändringar påverkar världen och vad vi kan göra åt det.", "Resurser och hållbarhet: Förstå hur naturresurser används och varför vi behöver tänka hållbart.", "Globalisering: Hur länder och ekonomier är kopplade till varandra.", "Kartkunskap: Lär dig använda kartor och andra verktyg för att navigera och analysera världen."], "kul": "Du får lära dig om spännande platser, kulturer och miljöer. Det kopplar till aktuella händelser, som klimatfrågor eller globala konflikter, som gör att du förstår nyheter bättre.", "framtid": ["Karriärmöjligheter: Jobb inom miljövård, urban planering, resebranschen, geopolitik eller internationella organisationer.", "Dagligt liv: Du blir bättre på att förstå världen och planera resor eller delta i globala samtal.", "Hållbarhetsexpert: Dina kunskaper kan hjälpa dig att bidra till en mer hållbar framtid."]}, "idrott": {"name": "Idrott och hälsa", "om": "Idrott och hälsa handlar om att förstå och träna kroppen samt lära sig leva ett hälsosamt liv.", "lar": ["Kroppskännedom: Hur din kropp fungerar och hur du kan stärka den genom träning.", "Hälsa och välmående: Förstå vikten av sömn, kost och balans i vardagen.", "Samarbete: Genom lagidrotter lär du dig att jobba med andra mot ett gemensamt mål.", "Ledarskap: Få chans att leda aktiviteter och utveckla självförtroende."], "kul": "Du får röra på dig, testa nya sporter och ha roligt med klasskompisar. Många aktiviteter sker utomhus, vilket kan ge extra energi och glädje.", "framtid": ["Hälsa för livet: Kunskapen hjälper dig att må bra både fysiskt och mentalt.", "Karriärmöjligheter: Möjlighet att arbeta som personlig tränare, idrottslärare, fysioterapeut eller inom idrottsorganisationer.", "Hobby och fritid: Inspirerar dig att hitta en träningsform som du älskar för resten av livet."]}, "kemi": {"name": "Kemi", "om": "Kemi handlar om att förstå hur ämnen reagerar med varandra och bygger upp allt omkring oss.", "lar": ["Molekyler och reaktioner: Hur olika ämnen reagerar och varför det sker.", "Miljö och hållbarhet: Kemi spelar en nyckelroll i att lösa miljöproblem som återvinning och förnybar energi.", "Hälsa och läkemedel: Förstå hur mediciner utvecklas och påverkar kroppen.", "Laborationer: Träna praktiskt genom experiment och utveckla ditt kritiska tänkande."], "kul": "Det är spännande att experimentera och skapa nya ämnen eller effekter i laborationen. Du får svar på vardagsfrågor, som varför mat jäser eller hur plast tillverkas.", "framtid": ["Karriärmöjligheter: Kemi behövs inom medicin, miljöteknik, kosmetik, livsmedel och forskning.", "Hållbart tänkande: Hjälp till att utveckla lösningar för klimatet och energifrågor.", "Praktiska kunskaper: Förstå vilka ämnen du använder i vardagen, som städprodukter eller matlagning."]}, "teknik": {"name": "Teknik", "om": "Teknik är ämnet där du lär dig att förstå, skapa och förbättra lösningar för verkliga problem.", "lar": ["Design och konstruktion: Hur saker byggs och varför de fungerar.", "Digital teknik: Grunderna i programmering och hur tekniska system hänger ihop.", "Hållbar utveckling: Skapa tekniska lösningar som är miljövänliga och långsiktiga.", "Problemlösning: Träna på att identifiera problem och skapa effektiva lösningar."], "kul": "Du får bygga saker med händerna och se dina idéer bli verklighet. Det är kreativt och utmanande att tänka ut lösningar på riktiga problem.", "framtid": ["Karriärmöjligheter: Teknik är grunden för ingenjörsjobb, IT, arkitektur och produktutveckling.", "Innovation: Hjälp till att skapa framtidens smarta teknik och hållbara lösningar.", "Vardag: Förstå tekniska prylar och kunna lösa praktiska problem hemma."]}, "modernasprak": {"name": "Moderna språk", "om": "Att lära sig ett nytt språk öppnar upp möjligheter att kommunicera med fler människor i världen.", "lar": ["Språkkunskap: Hur man skriver, talar och förstår ett nytt språk.", "Kulturell förståelse: Du lär dig om traditioner, historia och vardagsliv i andra länder.", "Kommunikation: Träna på att uttrycka dig och förstå andra i nya situationer."], "kul": "Du kan se filmer, lyssna på musik och läsa böcker på originalspråket. Det är spännande att lära sig hur andra människor lever och tänker.", "framtid": ["Resor och äventyr: Gör det lättare att resa och få vänner världen över.", "Karriärfördelar: Företag söker ofta personer som kan flera språk.", "Personlig utveckling: Att lära sig ett språk stärker hjärnan och förbättrar ditt minne."]}, "hemkunskap": {"name": "Hem- och konsumentkunskap", "om": "Hem- och konsumentkunskap handlar om att lära sig livsviktiga färdigheter för att hantera vardagen och göra hållbara val.", "lar": ["Matlagning och näring: Hur du lagar balanserade måltider och förstår matens påverkan på din hälsa.", "Ekonomi och budgetering: Hur du planerar din ekonomi, sparar pengar och gör kloka val som konsument.", "Hållbarhet: Hur du minskar matsvinn, väljer miljövänliga alternativ och bidrar till en hållbar framtid.", "Vardagskunskap: Praktiska färdigheter som städning, tvätt och planering för att hantera ett hushåll."], "kul": "Du får laga mat och testa nya recept som du kan använda hemma. Du lär dig att vara kreativ med små resurser, som att skapa nya maträtter av rester.", "framtid": ["Personligt liv: Du blir självständig och kan ta hand om dig själv.", "Karriär: Möjligheter inom matlagning, ekonomi eller miljövård.", "Vardagsekonomi: Förstå hur du gör smarta köpbeslut och hanterar pengar ansvarsfullt."]}, "bild": {"name": "Bild", "om": "Bildämnet handlar om att uttrycka sig kreativt och visuellt samt att förstå bilder i olika former och sammanhang.", "lar": ["Tekniker och material: Hur man arbetar med olika material som färger, pennor, lera och digitala verktyg.", "Bildanalys: Hur du tolkar och skapar mening i konst och visuella medier.", "Kreativitet: Utveckla ditt eget bildspråk och stärka din fantasi.", "Samhällsperspektiv: Förstå hur bilder påverkar kultur, marknadsföring och identitet."], "kul": "Du får skapa fritt och experimentera med nya tekniker. Det är en chans att uttrycka dina tankar och känslor på ett visuellt sätt.", "framtid": ["Karriär: Möjligheter inom design, arkitektur, reklam, mode eller spelutveckling.", "Kreativ problemlösning: Hjälper dig att tänka annorlunda och hitta lösningar i olika situationer.", "Personlig utveckling: Att kunna tolka bilder stärker ditt kritiska tänkande och mediekunnighet."]}, "fysik": {"name": "Fysik", "om": "Fysik handlar om att förstå hur universum fungerar – från de minsta partiklarna till de största galaxerna.", "lar": ["Krafter och rörelse: Hur saker rör sig och varför de gör det.", "Energi och resurser: Förstå hur energi används och hur vi kan omvandla den.", "Elektricitet och magnetism: Grunderna i hur el fungerar och hur tekniska apparater skapas.", "Universum: Upptäck hur stjärnor, planeter och galaxer bildas och utvecklas."], "kul": "Du får svar på frågor om naturens mysterier, som varför regnbågar uppstår eller hur flygplan flyger. Du kan göra experiment som visar hur naturens lagar fungerar i praktiken.", "framtid": ["Karriär: Jobb inom ingenjörskonst, rymdforskning, energisektorn eller teknisk utveckling.", "Dagligt liv: Förstå vardagsteknik, som varför lampor lyser eller hur batterier fungerar.", "Hållbar utveckling: Hjälpa till att utveckla lösningar för förnybar energi och miljövänliga tekniker."]}, "musik": {"name": "Musik", "om": "Musikämnet handlar om att förstå, skapa och uppskatta musik från olika genrer och kulturer.", "lar": ["Spel och sång: Hur du spelar instrument och utvecklar din röst.", "Musikteori: Förstå grunderna i noter, ackord och rytmer.", "Kulturell förståelse: Lär dig om olika musikstilar från hela världen.", "Samarbete: Arbeta tillsammans med andra i ensembler och grupper."], "kul": "Du får uttrycka dig kreativt och kanske hitta en ny passion i livet. Det är roligt att spela musik tillsammans med andra och skapa något gemensamt.", "framtid": ["Karriär: Jobb som musiker, ljudtekniker, musiklärare eller inom musikindustrin.", "Personlig utveckling: Musik stärker kreativitet, minne och samarbetsförmåga.", "Fritid: Att kunna spela ett instrument kan bli en livslång hobby eller sätt att koppla av."]}, "religionskunskap": {"name": "Religionskunskap", "om": "Religionskunskap handlar om att förstå olika religioner, livsåskådningar och deras påverkan på samhället.", "lar": ["Världsreligionerna: Grundläggande fakta om religioner som kristendom, islam, judendom, hinduism och buddhism.", "Livsfrågor: Utforska etik, moral och existentiella frågor.", "Mångfald och respekt: Förstå hur olika trosuppfattningar formar människors liv.", "Samhällspåverkan: Hur religioner påverkar politik, kultur och historia."], "kul": "Du får diskutera stora frågor om livet, som meningen med livet eller vad som är rätt och fel. Det ger dig insikt i andra människors sätt att tänka och leva.", "framtid": ["Global förståelse: Hjälper dig i möten med människor från olika kulturer.", "Karriär: Nyttigt inom yrken som journalistik, politik, socialt arbete eller utbildning.", "Personlig utveckling: Det ger dig verktyg att reflektera över dina egna värderingar och val."]}, "samhallskunskap": {"name": "Samhällskunskap", "om": "Samhällskunskap handlar om att förstå hur samhället fungerar och vilken roll du spelar i det.", "lar": ["Demokrati och politik: Hur Sveriges styrelsesystem fungerar och vad dina rättigheter och skyldigheter är.", "Ekonomi: Grundläggande om pengar, arbete, konsumtion och hur samhällsekonomin fungerar.", "Media och information: Hur du källkritiskt granskar information och förstår medias påverkan på opinioner.", "Lag och rätt: Grunderna i svenska lagar, rättssystemet och straff.", "Globala frågor: Förstå internationella relationer, FN:s arbete och globala utmaningar som fattigdom och klimatkriser."], "kul": "Du får diskutera och debattera aktuella frågor som påverkar världen och din vardag. Det är spännande att få insyn i hur makt och resurser fördelas i samhället.", "framtid": ["Karriär: Jobb inom politik, journalistik, juridik eller samhällsplanering.", "Dagligt liv: Veta hur du röstar, hanterar din ekonomi och påverkar samhället.", "Personlig utveckling: Bli en aktiv och medveten medborgare som gör informerade val."]}, "slojd": {"name": "Slöjd", "om": "Slöjd handlar om att skapa med händerna och lära sig olika tekniker och material som trä, metall, textil och moderna material.", "lar": ["Hantverkstekniker: Hur du sågar, syr, snidar eller programmerar en 3D-printer.", "Kreativ problemlösning: Designa och skapa funktionella eller estetiska föremål.", "Planering och precision: Hur du utvecklar och genomför ett projekt från idé till färdig produkt.", "Hållbarhet: Reparera och återanvända saker i stället för att köpa nytt."], "kul": "Du får skapa något unikt som du kan ta med hem och använda. Det är tillfredsställande att se dina idéer bli verklighet genom eget arbete.", "framtid": ["Hobby: Designa och laga egna kläder, möbler eller prylar.", "Karriär: Möjligheter inom design, mode, hantverk eller produktutveckling.", "Hållbarhet: Bidra till en mer miljövänlig livsstil genom att reparera och återvinna."]}, "matematik": {"name": "Matematik", "om": "Matematik handlar om att förstå mönster, samband och problemlösning – från siffror och statistik till geometri och algebra som hjälper oss att förstå och påverka vår omvärld.", "lar": ["Problemlösning: Träna logiskt tänkande och hitta strategier.", "Algebra och ekvationer: Lär dig se samband och lösa komplexa problem.", "Statistik och sannolikhet: Tolka information och fatta kloka beslut.", "Geometri: Förstå former, vinklar och rumsliga samband."], "kul": "Du får använda hjärnan på ett smart sätt, klura ut lösningar och se när matte plötsligt dyker upp i verkligheten – från gaming till byggprojekt. Det känns bra när något du kämpat med plötsligt “klickar”!", "framtid": ["Karriärmöjligheter: Viktigt i jobb som ingenjör, ekonom, arkitekt, programmerare, forskare.", "Dagligt liv: Planera budget, förstå ränta, laga mat, eller läsa statistik i media.", "Studier: Ger stark bas för många gymnasie- och högskoleprogram."]}, "svenska": {"name": "Svenska", "om": "Svenska handlar om att kunna uttrycka sig, förstå andra och tolka texter – muntligt, skriftligt och genom läsning. Det stärker din förmåga att kommunicera och tänka kritiskt.", "lar": ["Tala och skriva: Berätta, argumentera, reflektera och anpassa språket till olika sammanhang.", "Läsa och tolka: Förstå romaner, artiklar, dikt och fakta.", "Språklig medvetenhet: Hur språk fungerar, förändras och används.", "Källkritik: Hitta, värdera och använda information på ett klokt sätt."], "kul": "Du får skapa berättelser, diskutera viktiga frågor och fördjupa dig i litteraturens värld. Du lär känna både dig själv och andra genom språket.", "framtid": ["Karriärmöjligheter: Kommunikationsyrken, journalistik, juridik, undervisning, kultur, PR.", "Dagligt liv: Bli tydlig i samtal, förstå kontrakt, skriva ansökningar.", "Demokrati: Delta i samhällsdebatten med ett starkt och säkert språk."]}, "engelska": {"name": "Engelska", "om": "Engelska handlar om att förstå och använda världens mest använda språk – för att kommunicera globalt, ta in information och delta i internationella sammanhang.", "lar": ["Tala, skriva, läsa och lyssna: Träna alla delar av språket.", "Kommunikation: Använd engelska i vardag, resor, studier och jobb.", "Kulturförståelse: Lär känna olika delar av den engelskspråkiga världen.", "Strategier: Hur du lär dig språk och förstår även när det är svårt."], "kul": "Du får läsa spännande texter, se filmer, lyssna på musik – och känna att du kan prata med människor över hela världen.", "framtid": ["Karriärmöjligheter: Nästan alla yrken kräver någon nivå av engelska.", "Resor och nätverk: Prata med människor i andra länder.", "Studier och media: Ta del av forskning, utbildningar, spel, filmer och nyheter."]}, "historia": {"name": "Historia", "om": "Historia handlar om att förstå hur världen har blivit som den är – genom att studera händelser, personer och idéer från olika tider.", "lar": ["Historiska händelser: Krig, revolutioner, demokrati, vetenskap och samhällsutveckling.", "Källkritik: Värdera fakta och förstå olika perspektiv.", "Sammanhang: Se samband mellan dåtid, nutid och framtid.", "Mänskliga rättigheter: Förstå kampen för frihet, jämställdhet och rättvisa."], "kul": "Du får höra om maktkamper, dramatiska öden och avgörande ögonblick. Det väcker tankar om vad som är rätt och fel, och hur du själv vill påverka framtiden.", "framtid": ["Karriärmöjligheter: Journalist, lärare, jurist, politiker, forskare, arkivarie.", "Förståelse: Bättre grepp om nyheter, konflikter och samhällets utveckling.", "Medborgarskap: Hjälper dig att fatta egna beslut och förstå demokrati och frihet."]}, "biologi": {"name": "Biologi", "om": "Biologi handlar om livet – från minsta cell till hela ekosystem. Du lär dig hur kroppen fungerar, hur naturen samspelar och hur liv utvecklas.", "lar": ["Kroppen: Hur organ, hormoner, hjärnan och immunförsvaret fungerar.", "Ekologi: Naturens kretslopp, miljöpåverkan och biologisk mångfald.", "Genetik och evolution: Arv, DNA, utveckling och förändring av arter.", "Hälsa och livsstil: Vad som påverkar vår fysiska och psykiska hälsa."], "kul": "Du får lära dig om dig själv, naturen och allt levande. Det är spännande att förstå varför vi ser ut som vi gör – och hur allt hänger ihop.", "framtid": ["Karriärmöjligheter: Sjukvård, forskning, miljöarbete, veterinär, bioteknik.", "Hälsa: Förstå din kropp och ta hand om dig själv.", "Miljömedvetenhet: Bidra till en hållbar värld med dina kunskaper."]}}};
+const ORDER = ["matematik", "svenska", "engelska", "modernasprak", "historia", "samhallskunskap", "religionskunskap", "geografi", "biologi", "fysik", "kemi", "teknik", "musik", "bild", "slojd", "hemkunskap", "idrott"];
+const COLORS = {"matematik": {"ink": "#2e7c8a", "tint": "#e3f4f7"}, "svenska": {"ink": "#8a2e46", "tint": "#f7e3e9"}, "engelska": {"ink": "#2e568a", "tint": "#e3ecf7"}, "modernasprak": {"ink": "#8a492e", "tint": "#f7e9e3"}, "historia": {"ink": "#8a6a2e", "tint": "#f7f0e3"}, "samhallskunskap": {"ink": "#2e428a", "tint": "#e3e8f7"}, "religionskunskap": {"ink": "#622e8a", "tint": "#eee3f7"}, "geografi": {"ink": "#2e8a5f", "tint": "#e3f7ee"}, "biologi": {"ink": "#538a2e", "tint": "#ebf7e3"}, "fysik": {"ink": "#3a2e8a", "tint": "#e6e3f7"}, "kemi": {"ink": "#8a5c2e", "tint": "#f7ede3"}, "teknik": {"ink": "#2e6a8a", "tint": "#e3f0f7"}, "musik": {"ink": "#8a2e68", "tint": "#f7e3f0"}, "bild": {"ink": "#572e8a", "tint": "#ece3f7"}, "slojd": {"ink": "#8a462e", "tint": "#f7e9e3"}, "hemkunskap": {"ink": "#8a342e", "tint": "#f7e5e3"}, "idrott": {"ink": "#2e8a49", "tint": "#e3f7e9"}};
+const VIBE = {"matematik": "Mönster & problem", "svenska": "Berättelser", "engelska": "Världsspråk", "modernasprak": "Nya världar", "historia": "Tidsresor", "samhallskunskap": "Din röst", "religionskunskap": "Stora frågor", "geografi": "Utforska jorden", "biologi": "Allt levande", "fysik": "Universums regler", "kemi": "Reaktioner", "teknik": "Bygg & lös", "musik": "Uttryck dig", "bild": "Skapa fritt", "slojd": "Händernas verk", "hemkunskap": "Vardagslivet", "idrott": "Rörelse & mående"};
+
+const ICONS = {
+  matematik: '<path d="M6 34 L20 10 L34 34 Z"/><path d="M12 34 L28 34" /><circle cx="20" cy="22" r="1.6" fill="currentColor" stroke="none"/>',
+  svenska: '<path d="M6 12 C12 9 16 9 20 12 C24 9 28 9 34 12 V30 C28 27 24 27 20 30 C16 27 12 27 6 30 Z"/><path d="M20 12 V30"/>',
+  engelska: '<circle cx="20" cy="20" r="13"/><path d="M7 20 H33 M20 7 C25 12 25 28 20 33 C15 28 15 12 20 7 Z"/>',
+  modernasprak: '<path d="M9 8 V33"/><path d="M9 9 H29 L24 15 L29 21 H9"/>',
+  historia: '<path d="M8 34 H32 M11 34 V16 M17 34 V16 M23 34 V16 M29 34 V16 M6 16 H34 L20 7 Z"/>',
+  samhallskunskap: '<path d="M20 8 V32 M12 32 H28 M20 8 L10 14 M20 8 L30 14"/><path d="M10 14 L6 22 H14 Z"/><path d="M30 14 L26 22 H34 Z"/>',
+  religionskunskap: '<path d="M20 6 V17 M20 6 C17 6 15 9 15 12 C15 9 20 9 20 6 C20 9 25 9 25 12 C25 9 23 6 20 6 Z"/><path d="M14 34 C14 24 15 20 20 20 C25 20 26 24 26 34 Z"/>',
+  geografi: '<circle cx="20" cy="20" r="13"/><ellipse cx="20" cy="20" rx="6" ry="13"/><path d="M7 20 H33 M9.5 14 H30.5 M9.5 26 H30.5"/>',
+  biologi: '<path d="M20 34 C20 20 24 8 34 6 C34 18 28 26 20 34 Z"/><path d="M20 34 C20 24 17 16 10 10" />',
+  fysik: '<ellipse cx="20" cy="20" rx="15" ry="6"/><ellipse cx="20" cy="20" rx="15" ry="6" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="15" ry="6" transform="rotate(120 20 20)"/><circle cx="20" cy="20" r="2" fill="currentColor" stroke="none"/>',
+  kemi: '<path d="M16 6 H24 M17 6 V15 L9 30 C8 32.5 10 34 12.5 34 H27.5 C30 34 32 32.5 31 30 L23 15 V6"/><path d="M13 26 H27"/>',
+  teknik: '<circle cx="20" cy="20" r="6"/><path d="M20 6 V11 M20 29 V34 M6 20 H11 M29 20 H34 M9.8 9.8 L13.4 13.4 M26.6 26.6 L30.2 30.2 M9.8 30.2 L13.4 26.6 M26.6 13.4 L30.2 9.8"/>',
+  musik: '<circle cx="12" cy="30" r="4"/><circle cx="28" cy="27" r="4"/><path d="M16 30 V10 L32 7 V23"/>',
+  bild: '<path d="M20 8 C10 8 6 15 6 21 C6 27 10 29 13 27 C15 25.5 18 27 18 30 C18 33 21 34 24 32 C33 28 34 20 34 18 C34 11 28 8 20 8 Z"/><circle cx="14" cy="17" r="1.6" fill="currentColor" stroke="none"/><circle cx="21" cy="13" r="1.6" fill="currentColor" stroke="none"/><circle cx="27" cy="17" r="1.6" fill="currentColor" stroke="none"/>',
+  slojd: '<path d="M9 9 L18 18 M23 12 L31 4 L36 9 L28 17 L23 12 Z M18 18 L7 29 C5.5 30.5 5.5 33 7 34.5 C8.5 36 11 36 12.5 34.5 L23.5 23.5"/>',
+  hemkunskap: '<path d="M8 18 H32 V27 C32 30.5 29 33 25.5 33 H14.5 C11 33 8 30.5 8 27 Z"/><path d="M8 18 C8 13 13 10 20 10 C27 10 32 13 32 18"/><path d="M32 20 C35 20 36 22 36 24 C36 26 35 28 32 28"/>',
+  idrott: '<circle cx="24" cy="9" r="3"/><path d="M20 16 L24 12 L29 15 L26 22 L31 26 L28 34 M24 12 L18 19 L10 22 M18 19 L21 27 L14 34"/>'
+};
+
+const defs = document.getElementById('iconDefs');
+for (const key in ICONS){
+  defs.insertAdjacentHTML('beforeend', '<symbol id="ic-'+key+'" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">'+ICONS[key]+'</symbol>');
+}
+
+/* floating decorative icons on cover */
+const floatWrap = document.getElementById('floatIcons');
+const floatPicks = [
+  {k:'musik', top:'14%', left:'8%', size:38, delay:'0s'},
+  {k:'bild', top:'68%', left:'12%', size:30, delay:'1.1s'},
+  {k:'fysik', top:'20%', left:'88%', size:34, delay:'.5s'},
+  {k:'geografi', top:'72%', left:'86%', size:40, delay:'1.6s'},
+  {k:'kemi', top:'40%', left:'4%', size:26, delay:'2s'},
+  {k:'idrott', top:'85%', left:'46%', size:28, delay:'.8s'},
+  {k:'historia', top:'8%', left:'46%', size:24, delay:'1.4s'},
+];
+floatPicks.forEach(p => {
+  const c = COLORS[p.k].ink;
+  const el = document.createElement('div');
+  el.className = 'float-icon';
+  el.setAttribute('aria-hidden','true');
+  el.style.top = p.top; el.style.left = p.left;
+  el.style.width = p.size+'px'; el.style.height = p.size+'px';
+  el.style.color = c; el.style.animationDelay = p.delay;
+  el.innerHTML = '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><use href="#ic-'+p.k+'"/></svg>';
+  floatWrap.appendChild(el);
+});
+
+let state = { grade: null, subject: null };
+
+const cover = document.getElementById('cover');
+const gridScreen = document.getElementById('gridScreen');
+const detailScreen = document.getElementById('detailScreen');
+const navChrome = document.getElementById('chrome');
+const chromeGrade = document.getElementById('chromeGrade');
+
+function showScreen(el){
+  [cover, gridScreen, detailScreen].forEach(s => s.classList.remove('active'));
+  el.classList.remove('active'); void el.offsetWidth; el.classList.add('active');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+}
+
+function codeFor(key, grade){
+  const map = {matematik:'MAT',svenska:'SVE',engelska:'ENG',modernasprak:'MSP',historia:'HIS',
+    samhallskunskap:'SAM',religionskunskap:'REL',geografi:'GEO',biologi:'BIO',fysik:'FYS',
+    kemi:'KEM',teknik:'TEK',musik:'MUS',bild:'BLD',slojd:'SLJ',hemkunskap:'HKK',idrott:'IDH'};
+  return 'SE·HS'+grade+'·'+(map[key]||key.slice(0,3).toUpperCase());
+}
+
+function openGrade(grade){
+  state.grade = grade;
+  navChrome.classList.add('show');
+  chromeGrade.textContent = 'ÅRSKURS ' + grade;
+  document.getElementById('gridEyebrow').textContent = 'Årskurs ' + grade;
+  document.getElementById('backGrade').textContent = grade;
+  renderGrid();
+  showScreen(gridScreen);
+}
+
+function renderGrid(){
+  const wrap = document.getElementById('subjectGrid');
+  wrap.innerHTML = '';
+  ORDER.forEach(key => {
+    const s = DATA[state.grade][key];
+    if(!s) return;
+    const c = COLORS[key];
+    const card = document.createElement('button');
+    card.className = 'subject-card';
+    card.style.setProperty('--sc', c.ink);
+    card.style.setProperty('--sc-tint', c.tint);
+    card.innerHTML = '<div class="badge"><svg><use href="#ic-'+key+'"/></svg></div>'+
+      '<div class="sname">'+s.name+'</div>'+
+      '<div class="svibe">'+(VIBE[key]||'')+'</div>'+
+      '<div class="scode">'+codeFor(key, state.grade)+'</div>';
+    card.addEventListener('click', () => openSubject(key));
+    wrap.appendChild(card);
+  });
+}
+
+function openSubject(key){
+  state.subject = key;
+  const s = DATA[state.grade][key];
+  const c = COLORS[key];
+  const visaPage = document.getElementById('visaPage');
+  visaPage.style.setProperty('--sc', c.ink);
+  visaPage.style.setProperty('--sc-tint', c.tint);
+
+  document.getElementById('detKicker').textContent = 'Årskurs ' + state.grade + ' · Ämnesuppslag';
+  document.getElementById('detTitle').textContent = s.name;
+  document.getElementById('detVibe').textContent = VIBE[key] || '';
+  document.getElementById('detOm').textContent = s.om;
+  document.getElementById('detKul').textContent = s.kul;
+  document.getElementById('detCode').textContent = codeFor(key, state.grade);
+
+  const lar = document.getElementById('detLar');
+  lar.innerHTML = s.lar.map(li => renderListItem(li)).join('');
+  const fr = document.getElementById('detFramtid');
+  fr.innerHTML = s.framtid.map(li => renderListItem(li)).join('');
+
+  const stamp = document.getElementById('detStamp');
+  stamp.style.animation = 'none'; void stamp.offsetWidth; stamp.style.animation = '';
+  const arcId = 'arc-' + key + '-' + state.grade;
+  stamp.innerHTML =
+    '<defs><path id="'+arcId+'" d="M 20,70 A 50,50 0 1 1 120,70" fill="none"/></defs>' +
+    '<circle cx="70" cy="70" r="62" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 4"/>' +
+    '<circle cx="70" cy="70" r="52" fill="none" stroke="currentColor" stroke-width="1"/>' +
+    '<use href="#ic-'+key+'" x="46" y="50" width="48" height="48" />' +
+    '<text font-family="ui-monospace, monospace" font-size="8.6" letter-spacing="2.2" fill="currentColor"><textPath href="#'+arcId+'" startOffset="50%" text-anchor="middle">ÅRSKURS '+state.grade+' · GODKÄND</textPath></text>';
+  stamp.style.color = c.ink;
+
+  updatePrevNext();
+  renderProgress();
+  showScreen(detailScreen);
+}
+
+function renderListItem(text){
+  const idx = text.indexOf(':');
+  if(idx > -1 && idx < 40){
+    return '<li><b>'+escapeHtml(text.slice(0,idx))+':</b>'+escapeHtml(text.slice(idx+1))+'</li>';
+  }
+  return '<li>'+escapeHtml(text)+'</li>';
+}
+function escapeHtml(str){
+  const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+}
+
+function updatePrevNext(){
+  const i = ORDER.indexOf(state.subject);
+  document.getElementById('btnPrevSubj').disabled = (i <= 0);
+  document.getElementById('btnNextSubj').disabled = (i >= ORDER.length - 1);
+}
+
+function renderProgress(){
+  const wrap = document.getElementById('progressStrip');
+  wrap.innerHTML = '';
+  ORDER.forEach(key => {
+    const c = COLORS[key];
+    const dot = document.createElement('button');
+    dot.className = 'pdot' + (key === state.subject ? ' current' : '');
+    dot.style.setProperty('--dc', c.ink);
+    dot.title = DATA[state.grade][key].name;
+    dot.setAttribute('aria-label', DATA[state.grade][key].name);
+    dot.addEventListener('click', () => openSubject(key));
+    wrap.appendChild(dot);
+  });
+}
+
+document.querySelectorAll('.edition').forEach(btn=>{
+  btn.addEventListener('click', () => openGrade(btn.dataset.grade));
+});
+document.getElementById('btnChangeGrade').addEventListener('click', () => {
+  navChrome.classList.remove('show');
+  showScreen(cover);
+});
+document.getElementById('btnBackToGrid').addEventListener('click', () => {
+  renderGrid();
+  showScreen(gridScreen);
+});
+document.getElementById('btnPrevSubj').addEventListener('click', () => {
+  const i = ORDER.indexOf(state.subject);
+  if(i > 0) openSubject(ORDER[i-1]);
+});
+document.getElementById('btnNextSubj').addEventListener('click', () => {
+  const i = ORDER.indexOf(state.subject);
+  if(i < ORDER.length - 1) openSubject(ORDER[i+1]);
+});
+document.addEventListener('keydown', (e) => {
+  if(!detailScreen.classList.contains('active')) return;
+  if(e.key === 'ArrowRight') document.getElementById('btnNextSubj').click();
+  if(e.key === 'ArrowLeft') document.getElementById('btnPrevSubj').click();
+  if(e.key === 'Escape') document.getElementById('btnBackToGrid').click();
+});
+</script>
+</body>
+</html>
