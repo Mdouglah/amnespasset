@@ -302,9 +302,28 @@ button{font-family:inherit;cursor:pointer;}
   .stamp{align-self:flex-start;}
   .float-icon{display:none;}
 }
+
+/* Gemensam Norvay-list överst. Nollställer det appens egna stilar kan ge, så att listen ser likadan ut i alla appar. */
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/dm-sans-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/dm-sans-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/dm-sans-latin-600-normal.woff2') format('woff2'); }
+.norvay-bar, .norvay-bar * { margin: 0; text-transform: none; font-style: normal; }
+.norvay-bar { box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 44px; padding: 8px 20px; background: #f5f3ec; border-bottom: 1px solid rgba(18,63,55,0.14); font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.2; }
+.norvay-bar a { color: #123f37; text-decoration: none; }
+.norvay-bar a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.norvay-bar a:focus-visible { outline: 3px solid #2f6b5a; outline-offset: 3px; border-radius: 6px; }
+.norvay-bar-back { font-weight: 500; }
+.norvay-bar-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 12px; letter-spacing: 0.2em; }
+.norvay-bar-mark { width: 24px; height: 24px; border: 1.5px solid #123f37; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 13px; letter-spacing: 0; }
+@media print { .norvay-bar { display: none !important; } }
 </style>
 </head>
 <body>
+
+<div class="norvay-bar">
+  <a class="norvay-bar-back" href="https://norvayapp.se/#verktyg">← Alla verktyg</a>
+  <a class="norvay-bar-brand" href="https://norvayapp.se/" aria-label="Norvay startsida"><span class="norvay-bar-mark">N</span><span>NORVAY</span></a>
+</div>
 
 <svg width="0" height="0" style="position:absolute">
 <defs id="iconDefs"></defs>
@@ -335,7 +354,7 @@ button{font-family:inherit;cursor:pointer;}
         <path d="M9 12 L11 14 L15.5 9" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <div class="cover-eyebrow">Korsängskolan · Startveckan</div>
+    <div class="cover-eyebrow">Startveckan</div>
     <h1 class="cover-title">Ämnes<em>passet</em></h1>
     <p class="cover-sub">En resa genom högstadiets alla ämnen. Öppna ett uppslag, visa klassen varför just det här ämnet finns — och vart det kan ta dem.</p>
     <div class="cover-hint">Välj årskurs för att öppna passet</div>
