@@ -5,35 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ämnespasset — varför läser vi det här?</title>
 <style>
+@font-face{font-family:'Newsreader';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/newsreader-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'Newsreader';font-style:italic;font-weight:400;font-display:swap;src:url('/fonts/newsreader-latin-400-italic.woff2') format('woff2')}
+/* ===== Norvay-tema (samma som kuratorn-allman/src/theme.css), kategori skola ===== */
 :root{
-  --navy:#16233f;
-  --navy-deep:#0b1327;
-  --navy-soft:#223256;
-  --paper:#eef0e2;
-  --paper-2:#e2e6d4;
-  --paper-line: rgba(22,35,63,.14);
-  --gold:#b9915a;
-  --gold-light:#e3c691;
-  --ink:#1b2436;
-  --ink-soft:#4b5568;
-  /* Appens egna färger (steg a: samma värden som förut) */
-  --kort:#fff;
-  --kort-skugga:rgba(22,35,63,.14);
-  --chrome-linje:rgba(233,214,177,.18);
-  --pill-kant:rgba(233,214,177,.45);
-  --guld-skimmer:rgba(233,214,177,.12);
-  --guld-linje:rgba(233,214,177,.4);
-  --emblem-linje:rgba(227,198,145,.4);
-  --omslag-text:rgba(238,240,226,.78);
-  --omslag-hint:rgba(227,198,145,.75);
-  --omslag-fot:rgba(238,240,226,.45);
-  --utgava-kant:rgba(233,214,177,.3);
-  --utgava-skugga:rgba(0,0,0,.35);
-  --utgava-text:rgba(238,240,226,.65);
-  --rutnat-skimmer:rgba(185,145,90,.10);
-  --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+  --n-bg:#f5f3ec; --n-surface:#ffffff; --n-ink:#123f37; --n-ink-soft:#4f6b63; --n-line:rgba(18,63,55,.14);
+  --n-terracotta:#c9785f; --n-terracotta-soft:#dd9479; --n-radius:20px; --n-radius-sm:12px;
+  --n-accent:#2f6b5a; --n-tint:#d7e2d7; --n-on-accent:#ffffff;
+}
+/* ===== Appens färger (ändra här) – ljust Norvay-tema med guld som liten accent ===== */
+:root{
+  --navy:var(--n-ink);          /* rubriker och starka linjer (förut marinblått) */
+  --navy-deep:var(--n-bg);      /* sidans bakgrund (förut mörkt marinblått) */
+  --navy-soft:var(--n-surface);
+  --paper:var(--n-bg);
+  --paper-2:#ebe8df;
+  --paper-line:var(--n-line);
+  --gold:#b9915a;               /* guld som dekor: ringar och linjer */
+  --gold-light:#74562a;         /* mörkt guld för text och ikoner (kontrast 4,9–6,5) */
+  --ink:var(--n-ink);
+  --ink-soft:var(--n-ink-soft);
+  /* Appens egna färger */
+  --kort:var(--n-surface);
+  --kort-skugga:rgba(18,63,55,.10);
+  --chrome-linje:var(--n-line);
+  --pill-kant:var(--n-accent);
+  --guld-skimmer:rgba(185,145,90,.10);
+  --guld-linje:rgba(185,145,90,.45);
+  --emblem-linje:rgba(185,145,90,.6);
+  --omslag-text:var(--n-ink);
+  --omslag-hint:var(--n-ink-soft);
+  --omslag-fot:var(--n-ink-soft);
+  --utgava-kant:var(--n-line);
+  --utgava-skugga:rgba(18,63,55,.12);
+  --utgava-text:var(--n-ink-soft);
+  --rutnat-skimmer:rgba(185,145,90,.08);
+  --rubrik-em:#a4533c;          /* mörkare terrakotta för stor rubrik på tonad yta (kontrast) */
+  --serif:'Newsreader', Georgia, 'Times New Roman', serif;
   --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Courier New', monospace;
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --sans:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -318,6 +328,48 @@ button{font-family:inherit;cursor:pointer;}
   .float-icon{display:none;}
 }
 
+/* ===== Norvay-tema: utseende (bygger på variablerna överst) ===== */
+:focus-visible{outline:3px solid var(--n-accent);}
+/* Omslag: ljust, layout "band" med formen "circle" */
+#cover{background:var(--n-bg); color:var(--n-ink);}
+.cover-guilloche{opacity:.08;}
+.float-icon{opacity:.35;}
+.cover-content{width:100%; max-width:960px;}
+.n-hero--band{
+  width:100%; background:var(--n-tint); border-radius:32px; padding:44px;
+  display:grid; grid-template-columns:1fr auto; gap:32px; align-items:center; text-align:left; margin-bottom:38px;
+}
+.cover-band-text{display:flex; flex-direction:column; align-items:flex-start;}
+.cover-band-text .cover-emblem{margin:8px 0 22px 8px;}
+.cover-title{font-weight:400;}
+.cover-title em{color:var(--rubrik-em);}
+.cover-sub{margin:0; color:var(--n-ink);}
+.n-motif{position:relative; width:180px; aspect-ratio:1;}
+.n-motif::before,.n-motif::after{content:""; position:absolute;}
+.n-motif--circle::before{inset:10%; border-radius:50%; background:var(--n-bg);}   /* ljus mot det tonade bandet */
+.n-motif--circle::after{inset:0; border-radius:50%; border:2px dotted var(--n-accent); opacity:.55;}
+/* Årskurskorten */
+.edition{background:var(--kort); color:var(--n-ink); border-radius:var(--n-radius);}
+.edition .num{font-weight:400;}
+.edition .go{color:var(--n-accent); font-weight:600;}
+/* Toppfältet i rutnät och uppslag */
+.chrome{background:var(--n-surface); color:var(--n-ink);}
+.chrome-brand{font-weight:400;}
+.pill-btn{color:var(--n-accent); font-weight:600;}
+.pill-btn:hover{background:var(--n-tint); border-color:var(--n-accent);}
+/* Rubriker, kort och knappar */
+.grid-title,.visa-titles h1{font-weight:400;}
+.grid-eyebrow{color:var(--gold-light);}
+.subject-card{border-radius:var(--n-radius);}
+.visa-page{border-radius:var(--n-radius);}
+.nav-btn{border-color:var(--n-accent); color:var(--n-accent); border-radius:999px;}
+.nav-btn:hover{background:var(--n-accent); color:var(--n-on-accent);}
+.nav-btn:disabled:hover{background:var(--kort); color:var(--n-accent);}
+@media (max-width:640px){
+  .n-hero--band{grid-template-columns:1fr; padding:28px 22px; border-radius:24px;}
+  .n-motif{display:none;}   /* på telefon räcker passets runda emblem som cirkel */
+}
+
 /* Gemensam Norvay-list överst. Nollställer det appens egna stilar kan ge, så att listen ser likadan ut i alla appar. */
 @font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/dm-sans-latin-400-normal.woff2') format('woff2'); }
 @font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/dm-sans-latin-500-normal.woff2') format('woff2'); }
@@ -363,6 +415,8 @@ button{font-family:inherit;cursor:pointer;}
   </svg>
   <div id="floatIcons"></div>
   <div class="cover-content">
+    <div class="n-hero--band">
+    <div class="cover-band-text">
     <div class="cover-emblem">
       <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 3 L20 7 V13 C20 18 16.5 20.5 12 21.5 C7.5 20.5 4 18 4 13 V7 Z"/>
@@ -372,6 +426,9 @@ button{font-family:inherit;cursor:pointer;}
     <div class="cover-eyebrow">Startveckan</div>
     <h1 class="cover-title">Ämnes<em>passet</em></h1>
     <p class="cover-sub">En resa genom högstadiets alla ämnen. Öppna ett uppslag, visa klassen varför just det här ämnet finns — och vart det kan ta dem.</p>
+    </div>
+    <div class="n-motif n-motif--circle" aria-hidden="true"></div>
+    </div>
     <div class="cover-hint">Välj årskurs för att öppna passet</div>
     <div class="editions">
       <button class="edition" data-grade="7">
