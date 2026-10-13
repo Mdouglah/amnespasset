@@ -16,6 +16,21 @@
   --gold-light:#e3c691;
   --ink:#1b2436;
   --ink-soft:#4b5568;
+  /* Appens egna färger (steg a: samma värden som förut) */
+  --kort:#fff;
+  --kort-skugga:rgba(22,35,63,.14);
+  --chrome-linje:rgba(233,214,177,.18);
+  --pill-kant:rgba(233,214,177,.45);
+  --guld-skimmer:rgba(233,214,177,.12);
+  --guld-linje:rgba(233,214,177,.4);
+  --emblem-linje:rgba(227,198,145,.4);
+  --omslag-text:rgba(238,240,226,.78);
+  --omslag-hint:rgba(227,198,145,.75);
+  --omslag-fot:rgba(238,240,226,.45);
+  --utgava-kant:rgba(233,214,177,.3);
+  --utgava-skugga:rgba(0,0,0,.35);
+  --utgava-text:rgba(238,240,226,.65);
+  --rutnat-skimmer:rgba(185,145,90,.10);
   --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
   --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Courier New', monospace;
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -40,7 +55,7 @@ button{font-family:inherit;cursor:pointer;}
   padding:14px clamp(16px,4vw,40px);
   background:var(--navy);
   color:var(--paper);
-  border-bottom:1px solid rgba(233,214,177,.18);
+  border-bottom:1px solid var(--chrome-linje);
 }
 .chrome.show{display:flex;}
 .chrome-brand{
@@ -53,14 +68,14 @@ button{font-family:inherit;cursor:pointer;}
 }
 .chrome-right{display:flex; align-items:center; gap:10px;}
 .pill-btn{
-  background:transparent; border:1px solid rgba(233,214,177,.45);
+  background:transparent; border:1px solid var(--pill-kant);
   color:var(--paper); padding:8px 16px; border-radius:999px;
   font-size:13.5px; letter-spacing:.02em; transition:all .15s ease;
 }
-.pill-btn:hover{background:rgba(233,214,177,.12); border-color:var(--gold-light);}
+.pill-btn:hover{background:var(--guld-skimmer); border-color:var(--gold-light);}
 .grade-tag{
   font-family:var(--mono); font-size:12px; letter-spacing:.08em;
-  border:1px solid rgba(233,214,177,.4); border-radius:6px;
+  border:1px solid var(--guld-linje); border-radius:6px;
   padding:5px 9px; color:var(--gold-light);
 }
 
@@ -73,7 +88,7 @@ button{font-family:inherit;cursor:pointer;}
 #cover{
   min-height:100vh;
   background:
-    radial-gradient(ellipse 900px 500px at 50% -10%, rgba(233,214,177,.12), transparent 60%),
+    radial-gradient(ellipse 900px 500px at 50% -10%, var(--guld-skimmer), transparent 60%),
     linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
   flex-direction:column; align-items:center; justify-content:center;
   text-align:center; color:var(--paper); padding:48px 20px; position:relative;
@@ -97,7 +112,7 @@ button{font-family:inherit;cursor:pointer;}
   position:relative;
 }
 .cover-emblem::before{
-  content:'';position:absolute; inset:-8px; border:1px dashed rgba(227,198,145,.4); border-radius:50%;
+  content:'';position:absolute; inset:-8px; border:1px dashed var(--emblem-linje); border-radius:50%;
 }
 .cover-eyebrow{
   font-family:var(--mono); font-size:12.5px; letter-spacing:.32em; text-transform:uppercase;
@@ -109,12 +124,12 @@ button{font-family:inherit;cursor:pointer;}
 }
 .cover-title em{font-style:italic; color:var(--gold-light);}
 .cover-sub{
-  font-size:clamp(15px,2vw,18px); color:rgba(238,240,226,.78); max-width:560px;
+  font-size:clamp(15px,2vw,18px); color:var(--omslag-text); max-width:560px;
   line-height:1.6; margin:0 0 46px;
 }
 .cover-hint{
   font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
-  color:rgba(227,198,145,.75); margin-bottom:18px;
+  color:var(--omslag-hint); margin-bottom:18px;
 }
 .editions{
   display:flex; gap:22px; flex-wrap:wrap; justify-content:center; max-width:900px;
@@ -122,31 +137,31 @@ button{font-family:inherit;cursor:pointer;}
 .edition{
   width:190px; padding:28px 20px 24px;
   background:linear-gradient(160deg, var(--navy-soft), var(--navy));
-  border:1px solid rgba(233,214,177,.3); border-radius:10px;
+  border:1px solid var(--utgava-kant); border-radius:10px;
   color:var(--paper); text-align:left; position:relative; overflow:hidden;
   transition:transform .25s cubic-bezier(.2,.8,.2,1), border-color .25s ease, box-shadow .25s ease;
 }
 .edition::after{
   content:''; position:absolute; right:14px; top:14px; width:30px; height:30px;
-  border:1px dashed rgba(233,214,177,.4); border-radius:50%;
+  border:1px dashed var(--guld-linje); border-radius:50%;
 }
 .edition:hover, .edition:focus-visible{
   transform:translateY(-6px) scale(1.02); border-color:var(--gold-light);
-  box-shadow:0 18px 34px rgba(0,0,0,.35);
+  box-shadow:0 18px 34px var(--utgava-skugga);
 }
 .edition .num{
   font-family:var(--serif); font-size:44px; font-weight:700; color:var(--gold-light); line-height:1;
 }
 .edition .lbl{
   font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
-  color:rgba(238,240,226,.65); margin-top:10px;
+  color:var(--utgava-text); margin-top:10px;
 }
 .edition .go{
   margin-top:20px; font-size:13px; color:var(--gold-light); display:flex; align-items:center; gap:6px;
 }
 .cover-foot{
   margin-top:44px; font-family:var(--mono); font-size:11px; letter-spacing:.1em;
-  color:rgba(238,240,226,.45); position:relative; z-index:2;
+  color:var(--omslag-fot); position:relative; z-index:2;
 }
 
 /* ===== GRID (subject select) ===== */
@@ -154,7 +169,7 @@ button{font-family:inherit;cursor:pointer;}
 .grid-hero{
   padding:44px clamp(16px,4vw,40px) 20px;
   background:
-    radial-gradient(ellipse 700px 320px at 12% 0%, rgba(185,145,90,.10), transparent 60%),
+    radial-gradient(ellipse 700px 320px at 12% 0%, var(--rutnat-skimmer), transparent 60%),
     var(--paper);
   border-bottom:1px solid var(--paper-line);
 }
@@ -166,12 +181,12 @@ button{font-family:inherit;cursor:pointer;}
   gap:16px; padding:28px clamp(16px,4vw,40px) 60px;
 }
 .subject-card{
-  background:#fff; border:1px solid var(--paper-line); border-top:4px solid var(--sc);
+  background:var(--kort); border:1px solid var(--paper-line); border-top:4px solid var(--sc);
   border-radius:12px; padding:22px 16px 18px; text-align:center; position:relative;
   transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 .subject-card:hover, .subject-card:focus-visible{
-  transform:translateY(-5px); box-shadow:0 16px 28px rgba(22,35,63,.14);
+  transform:translateY(-5px); box-shadow:0 16px 28px var(--kort-skugga);
 }
 .badge{
   width:60px; height:60px; margin:0 auto 12px; border-radius:50%;
@@ -201,7 +216,7 @@ button{font-family:inherit;cursor:pointer;}
 }
 .detail-back:hover{color:var(--navy); text-decoration:underline;}
 .visa-page{
-  background:#fff; border:1px solid var(--paper-line); border-radius:16px;
+  background:var(--kort); border:1px solid var(--paper-line); border-radius:16px;
   padding:clamp(24px,5vw,52px); position:relative; overflow:hidden;
   border-top:6px solid var(--sc);
 }
@@ -261,13 +276,13 @@ button{font-family:inherit;cursor:pointer;}
 .code{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; color:var(--ink-soft);}
 .detail-nav{display:flex; gap:10px;}
 .nav-btn{
-  border:1px solid var(--navy); background:#fff; color:var(--navy);
+  border:1px solid var(--navy); background:var(--kort); color:var(--navy);
   padding:9px 15px; border-radius:8px; font-size:13.5px; font-weight:600;
   display:flex; align-items:center; gap:6px; transition:all .15s ease;
 }
-.nav-btn:hover{background:var(--navy); color:#fff;}
+.nav-btn:hover{background:var(--navy); color:var(--kort);}
 .nav-btn:disabled{opacity:.3; cursor:default;}
-.nav-btn:disabled:hover{background:#fff; color:var(--navy);}
+.nav-btn:disabled:hover{background:var(--kort); color:var(--navy);}
 
 /* progress dots */
 .progress-strip{
@@ -340,7 +355,7 @@ button{font-family:inherit;cursor:pointer;}
 <!-- ================= COVER ================= -->
 <section class="screen active" id="cover">
   <svg class="cover-guilloche" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
-    <g fill="none" stroke="#e3c691" stroke-width="0.6">
+    <g fill="none" style="stroke:var(--gold-light)" stroke-width="0.6">
       <circle cx="400" cy="300" r="120"/><circle cx="400" cy="300" r="160"/><circle cx="400" cy="300" r="200"/>
       <circle cx="80" cy="80" r="70"/><circle cx="80" cy="80" r="100"/>
       <circle cx="740" cy="520" r="80"/><circle cx="740" cy="520" r="115"/>
@@ -396,7 +411,7 @@ button{font-family:inherit;cursor:pointer;}
     <div class="visa-page" id="visaPage">
       <div class="visa-wash"></div>
       <svg class="visa-guilloche" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
-        <g fill="none" stroke="#16233f" stroke-width="0.6">
+        <g fill="none" style="stroke:var(--navy)" stroke-width="0.6">
           <circle cx="700" cy="60" r="90"/><circle cx="700" cy="60" r="130"/>
           <circle cx="60" cy="440" r="90"/><circle cx="60" cy="440" r="130"/>
         </g>
