@@ -135,6 +135,9 @@ button{font-family:inherit;cursor:pointer;}
   font-family:var(--mono); font-size:12.5px; letter-spacing:.32em; text-transform:uppercase;
   color:var(--gold-light); margin-bottom:18px;
 }
+/* Länk till Startveckan (ett annat Norvay-verktyg) i rubriken ovanför titeln */
+.cover-eyebrow a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;display:inline-block;padding:14px 0;margin:-14px 0}
+.cover-eyebrow a:hover{text-decoration-thickness:2px}
 .cover-title{
   font-family:var(--serif); font-weight:700; font-size:clamp(38px,7vw,68px);
   line-height:1.05; margin:0 0 18px; letter-spacing:-.01em;
@@ -467,7 +470,7 @@ button{font-family:inherit;cursor:pointer;}
         <path d="M9 12 L11 14 L15.5 9" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <div class="cover-eyebrow">Startveckan</div>
+    <div class="cover-eyebrow"><a href="https://startveckan.norvayapp.se" aria-label="Startveckan – öppna verktyget Startveckan">Startveckan ↗</a></div>
     <h1 class="cover-title">Ämnes<em>passet</em></h1>
     <p class="cover-sub">En resa genom högstadiets alla ämnen. Öppna ett uppslag, visa klassen varför just det här ämnet finns — och vart det kan ta dem.</p>
     </div>
